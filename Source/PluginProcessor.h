@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -13,7 +5,8 @@
 //==============================================================================
 /**
 */
-class PhaserDSPAudioProcessor  : public juce::AudioProcessor
+class PhaserDSPAudioProcessor  : public juce::AudioProcessor,
+                                 public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -52,8 +45,16 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    void reset() override;
+
+    juce::AudioProcessorValueTreeState apvts;
 
 private:
+    juce::dsp::Phaser<float> phaser;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+
+    void parameterChanged (const juce::String& parameterID, float newValue) override;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PhaserDSPAudioProcessor)
 };
